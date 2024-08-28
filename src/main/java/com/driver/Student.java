@@ -1,4 +1,7 @@
 package com.driver;
+import lombok.Getter;
+import lombok.Setter;
+
 
 public class Student {
 
@@ -16,7 +19,6 @@ public class Student {
         this.averageScore = averageScore;
     }
 
-    // Getters and Setters
     public String getName() {
         return name;
     }
@@ -34,10 +36,10 @@ public class Student {
     }
 
     public double getAverageScore() {
-        return  averageScore;
+        return averageScore;
     }
 
-    public void setAverageScore() {
+    public void setAverageScore(double averageScore) {
         this.averageScore = averageScore;
     }
 }
