@@ -1,6 +1,4 @@
 package com.driver;
-import lombok.Getter;
-import lombok.Setter;
 
 
 public class Student {
@@ -12,6 +10,8 @@ public class Student {
     public Student(){
 
     }
+
+
 
     public Student(String name, int age, double averageScore) {
         this.name = name;
