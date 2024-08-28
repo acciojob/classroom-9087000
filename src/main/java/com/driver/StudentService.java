@@ -1,59 +1,58 @@
 package com.driver;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
 @Service
 public class StudentService {
 
-    @Autowired
-    StudentRepository studentRepository;
+    private final Map<String, Student> students = new HashMap<>();
+    private final Map<String, Teacher> teachers = new HashMap<>();
+    private final Map<String, List<String>> studentTeacherPairs = new HashMap<>();
 
-    public void addStudent(Student student) { // add student in db
-        studentRepository.addStudent(student);
+    public void addStudent(Student student) {
+        students.put(student.getName(), student);
     }
 
-    public void addTeacher(Teacher teacher) { // add teacher in db
-        studentRepository.addTeacher(teacher);
+    public void addTeacher(Teacher teacher) {
+        teachers.put(teacher.getName(), teacher);
     }
 
-    public void addStudentTeacherPair(String teacherName, String studentName) {
-        studentRepository.addStudentTeacherPair(teacherName, studentName); // add student teacher pair in db
+    public void addStudentTeacherPair(String studentName, String teacherName) {
+        if (!students.containsKey(studentName) || !teachers.containsKey(teacherName)) {
+            throw new IllegalArgumentException("Student or teacher not found");
+        }
+
+        List<String> studentsOfTeacher = studentTeacherPairs.getOrDefault(teacherName, new ArrayList<>());
+        studentsOfTeacher.add(studentName);
+        studentTeacherPairs.put(teacherName, studentsOfTeacher);
     }
 
-    public Student getStudentByName(String studentName) {
-        return studentRepository.getStudentByName(studentName); // get student by name
+    public Student getStudentByName(String name) {
+        return students.get(name);
     }
 
-    public Teacher getTeacherByName(String teacherName) {
-        return studentRepository.getTeacherByName(teacherName); // get teacher by name
+    public Teacher getTeacherByName(String name) {
+        return teachers.get(name);
     }
 
-    public List<String> getStudentsByTeacherName(String teacherName) { // get list of students under teacher
-        return studentRepository.getStudentsByTeacherName(teacherName);
+    public List<String> getStudentsByTeacherName(String teacherName) {
+        return studentTeacherPairs.getOrDefault(teacherName, new ArrayList<>());
     }
 
-    public List<String> getAllStudentsNameList() { // get all student's name list
-        return studentRepository.getAllStudentsName();
+    public List<String> getAllStudents() {
+        return new ArrayList<>(students.keySet());
     }
 
     public void deleteTeacherByName(String teacherName) {
-        List<String> studentList = studentRepository.getStudentsByTeacherName(teacherName);
-
-        studentRepository.deleteTeacher(teacherName);
-
-        for (String s: studentList) {
-            studentRepository.deleteStudent(s);
-        }
+        teachers.remove(teacherName);
+        studentTeacherPairs.remove(teacherName);
     }
 
     public void deleteAllTeachers() {
-        List<String> teacherList = studentRepository.getAllTeachersName();
-
-        for (String teacher: teacherList) {
-            deleteTeacherByName(teacher);
-        }
+        teachers.clear();
+        studentTeacherPairs.clear();
     }
 }
